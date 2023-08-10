@@ -3,10 +3,15 @@ using Meadow.Devices;
 using Meadow.Foundation;
 using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Graphics.Buffers;
+using Meadow.Foundation.mikroBUS.Displays;
+using Meadow.Gateways.Bluetooth;
+using Meadow.Hardware;
 using SimpleJpegDecoder;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DefConBadge2023
@@ -17,6 +22,9 @@ namespace DefConBadge2023
         IProjectLabHardware projLab;
 
         MicroGraphics graphics;
+
+        IGraphicsDisplay mikroBusLedDisplay;
+        MicroGraphics mikroBusLedDisplayGraphics;
 
         IBadgePage currentPage;
 
@@ -58,6 +66,7 @@ namespace DefConBadge2023
 
         public override async Task Run()
         {
+            ScrollBannerMessage(mikroBusLedDisplayGraphics);
             while (true)
             {
                 DrawSplash(defcon1);
@@ -82,12 +91,47 @@ namespace DefConBadge2023
             }
         }
 
+        private void ScrollBannerMessage(MicroGraphics graphics)
+        {
+            _ = Task.Run(() =>
+            {
+                Stopwatch stopwatch = Stopwatch.StartNew();
+
+                int maxCompleteCharsPerScreen = (int)Math.Floor(graphics.Width / (graphics.CurrentFont.Width + 1.0));
+                var message = (new string(' ', maxCompleteCharsPerScreen + 1)) + "Meadow + DEF CON 31";
+                Resolver.Log.Info(message);
+
+                while (true)
+                {
+                    for (int x = 0; x < message.Length * (graphics.CurrentFont.Width + 1); x++)
+                    {
+                        if (stopwatch.ElapsedMilliseconds > 500)
+                        {
+                            //Resolver.Log.Info("Adjusting brightness");
+                            tertiaryDisplayBrightness = AdjustDisplayBrightnessToAmbientBrightness();
+                            stopwatch.Restart();
+                        }
+                        graphics.Clear();
+                        graphics.DrawText(0 - x, 1, message, new Color(tertiaryDisplayBrightness, tertiaryDisplayBrightness, tertiaryDisplayBrightness));
+                        graphics.Show();
+
+                        Thread.Sleep(0);
+                    }
+
+                    Thread.Sleep(50);
+                }
+            }).ConfigureAwait(false);
+        }
+
         public override Task Initialize()
         {
             Console.WriteLine("Initialize hardware...");
 
             projLab = ProjectLab.Create();
             graphics = new MicroGraphics(projLab.Display);
+
+            mikroBusLedDisplay = new C16x9(projLab.MikroBus2.Pins.AN, projLab.MikroBus2.I2cBus);
+            mikroBusLedDisplayGraphics = new MicroGraphics(mikroBusLedDisplay);
 
             projLab.LeftButton.Clicked += ButtonLeft_Clicked;
             projLab.RightButton.Clicked += ButtonRight_Clicked;
