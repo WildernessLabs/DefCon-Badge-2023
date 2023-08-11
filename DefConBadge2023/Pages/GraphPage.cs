@@ -1,4 +1,5 @@
-﻿using Meadow.Devices;
+﻿using Meadow;
+using Meadow.Devices;
 using Meadow.Foundation;
 using Meadow.Foundation.Graphics;
 using System;
@@ -53,7 +54,7 @@ namespace DefConBadge2023
 
         public void Init(IProjectLabHardware hardware)
         {
-            Console.WriteLine("Init");
+            Resolver.Log.Info("Init");
 
             data = new int[graphics.Width];
 
