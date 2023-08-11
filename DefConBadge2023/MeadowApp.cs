@@ -58,7 +58,7 @@ namespace DefConBadge2023
                 if (light is { } lightReading)
                 {
                     adjustedBrightness = (float)Math.Clamp(lightReading.Lux, lowestAmbientBrightnessThreshold, highestAmbientBrightnessThreshold).Map(lowestAmbientBrightnessThreshold, highestAmbientBrightnessThreshold, 0.1, 1.0);
-                    Console.WriteLine($"Lux: {lightReading.Lux}, Adjusted: {adjustedBrightness}");
+                    //Resolver.Log.Info($"Lux: {lightReading.Lux}, Adjusted: {adjustedBrightness}");
                 }
             }
             return adjustedBrightness;
@@ -125,7 +125,7 @@ namespace DefConBadge2023
 
         public override Task Initialize()
         {
-            Console.WriteLine("Initialize hardware...");
+            Resolver.Log.Info("Initialize hardware...");
 
             projLab = ProjectLab.Create();
             graphics = new MicroGraphics(projLab.Display);
@@ -168,7 +168,7 @@ namespace DefConBadge2023
 
             graphics.DrawBuffer(0, 0, buffer);
 
-            Console.WriteLine("Jpeg show");
+            //Resolver.Log.Info("Jpeg show");
 
             graphics.Show();
         }
@@ -177,14 +177,12 @@ namespace DefConBadge2023
         {
             var jpgData = LoadResource(name);
 
-            Console.WriteLine($"Loaded {jpgData.Length} bytes, decoding jpeg ...");
+            Resolver.Log.Info($"Loaded {jpgData.Length} bytes, decoding jpeg ...");
 
             var decoder = new JpegDecoder();
             var jpg = decoder.DecodeJpeg(jpgData);
 
-            Console.WriteLine($"Jpeg decoded is {jpg.Length} bytes");
-            Console.WriteLine($"Width {decoder.Width}");
-            Console.WriteLine($"Height {decoder.Height}");
+            Resolver.Log.Info($"Size: {jpg.Length} bytes; {decoder.Width}x{decoder.Height} pixels");
 
             return new BufferRgb888(decoder.Width, decoder.Height, jpg);
         }
@@ -202,14 +200,14 @@ namespace DefConBadge2023
         private void ButtonRight_Clicked(object sender, EventArgs e)
         {
             tertiaryDisplayBrightness += brightnessChangeAmount;
-            Console.WriteLine($"Brightness: {tertiaryDisplayBrightness}");
+            Resolver.Log.Info($"Brightness: {tertiaryDisplayBrightness}");
             currentPage.Right();
         }
 
         private void ButtonLeft_Clicked(object sender, EventArgs e)
         {
             tertiaryDisplayBrightness -= brightnessChangeAmount;
-            Console.WriteLine($"Brightness: {tertiaryDisplayBrightness}");
+            Resolver.Log.Info($"Brightness: {tertiaryDisplayBrightness}");
             currentPage.Left();
         }
 
