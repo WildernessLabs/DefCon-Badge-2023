@@ -98,7 +98,7 @@ namespace DefConBadge2023
                 Stopwatch stopwatch = Stopwatch.StartNew();
 
                 int maxCompleteCharsPerScreen = (int)Math.Floor(graphics.Width / (graphics.CurrentFont.Width + 1.0));
-                var message = (new string(' ', maxCompleteCharsPerScreen + 1)) + "Meadow + DEF CON 31";
+                var message = (new string(' ', maxCompleteCharsPerScreen + 1)) + "Meadow + DC31";
                 Resolver.Log.Info(message);
 
                 while (true)
