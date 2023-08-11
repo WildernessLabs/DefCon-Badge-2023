@@ -152,6 +152,10 @@ namespace DefConBadge2023
                 new GraphPage(),
                 new WiFiTrackerPage(),
             };
+            foreach (var page in pages)
+            {
+                page.Init(projLab);
+            }
 
             currentPage = pages[0];
 

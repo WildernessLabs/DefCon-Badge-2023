@@ -1,6 +1,9 @@
 ﻿using Meadow.Devices;
 using Meadow.Foundation;
 using Meadow.Foundation.Graphics;
+using Meadow.Foundation.Sensors.Accelerometers;
+using Meadow.Foundation.Sensors.Atmospheric;
+using Meadow.Foundation.Sensors.Light;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,12 +18,20 @@ namespace DefConBadge2023
 
         public bool IsUpdating = false;
 
+        public Bme688 EnvironmentSensor { get; private set; }
+        public Bh1750 LightSensor { get; private set; }
+        public Bmi270 MotionSensor { get; private set; }
+
         public void StartUpdating(IProjectLabHardware config, MicroGraphics graphics)
         {
             this.config = config;
             this.graphics = graphics;
 
             IsUpdating = true;
+
+            EnvironmentSensor.StartUpdating();
+            LightSensor.StartUpdating();
+            MotionSensor.StartUpdating();
 
             Task.Run(() =>
             {
@@ -34,12 +45,18 @@ namespace DefConBadge2023
 
         public void StopUpdating()
         {
+            EnvironmentSensor.StartUpdating();
+            LightSensor.StartUpdating();
+            MotionSensor.StartUpdating();
+
             IsUpdating = false;
         }
 
         public void Init(IProjectLabHardware hardware)
         {
-         
+            EnvironmentSensor = hardware.EnvironmentalSensor;
+            LightSensor = hardware.LightSensor;
+            MotionSensor = hardware.MotionSensor;
         }
 
         public void Reset()
@@ -60,7 +77,6 @@ namespace DefConBadge2023
 
         public void Up()
         {
-            throw new NotImplementedException();
         }
 
         //helper method
@@ -91,7 +107,6 @@ namespace DefConBadge2023
             {
                 DrawStatus("Humidity:", $"{humidity.Percent:N1}%", WildernessLabsColors.GalleryWhite, 120);
             }
-            
 
             if (config.LightSensor.Illuminance is { } light)
             {
