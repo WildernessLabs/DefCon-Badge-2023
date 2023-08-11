@@ -130,8 +130,13 @@ namespace DefConBadge2023
             projLab = ProjectLab.Create();
             graphics = new MicroGraphics(projLab.Display);
 
-            mikroBusLedDisplay = new C16x9(projLab.MikroBus2.Pins.AN, projLab.MikroBus2.I2cBus);
-            mikroBusLedDisplayGraphics = new MicroGraphics(mikroBusLedDisplay);
+            mikroBusLedDisplay = new C16x9(projLab.MikroBus2.Pins.CS, projLab.MikroBus2.I2cBus);
+            mikroBusLedDisplayGraphics = new MicroGraphics(mikroBusLedDisplay)
+            {
+                IgnoreOutOfBoundsPixels = true,
+                CurrentFont = new Font6x8(),
+                Rotation = RotationType._180Degrees,
+            };
 
             projLab.LeftButton.Clicked += ButtonLeft_Clicked;
             projLab.RightButton.Clicked += ButtonRight_Clicked;
