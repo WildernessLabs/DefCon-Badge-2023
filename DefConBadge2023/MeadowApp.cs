@@ -37,10 +37,6 @@ namespace DefConBadge2023
 
         //Random rand = new Random();
 
-        // TODO: Possibly worth making these part of some inherited system of hardware config classes?
-        const bool useTertiaryDisplay = false;
-        const bool useSecondaryDisplay = true;
-
         const float defaultBrightness = 0.2f;
         const float brightnessChangeAmount = 0.1f;
         const double lowestAmbientBrightnessThreshold = 40;
@@ -149,8 +145,8 @@ namespace DefConBadge2023
             pages = new IBadgePage[]
             {
                 new EnvironmentPage(),
-                new GraphPage(),
-                new WiFiTrackerPage(),
+                //new GraphPage(),
+                //new WiFiTrackerPage(),
             };
             foreach (var page in pages)
             {
