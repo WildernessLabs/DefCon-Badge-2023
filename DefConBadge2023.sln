@@ -37,6 +37,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sensors.Atmospheric.Bme68x"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meadow.ProjectLab", "..\Meadow.ProjectLab\Source\Meadow.ProjectLab\Meadow.ProjectLab.csproj", "{D113B573-3132-4B4F-A159-28B8DAEABE83}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Audio.MicroAudio", "..\Meadow.Foundation\Source\Meadow.Foundation.Libraries_and_Frameworks\Audio.MicroAudio\Driver\Audio.MicroAudio.csproj", "{302400E9-EA17-43BD-B662-642D270830C6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "C8x8", "..\Meadow.Foundation.MikroBus\Source\C8x8\Driver\C8x8.csproj", "{87CF2085-8BC5-4574-9787-4A940FE47685}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Displays.Max7219", "..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Displays.Max7219\Driver\Displays.Max7219.csproj", "{C79ABFFB-1029-4AA6-B398-78AC5A70E350}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -137,6 +143,24 @@ Global
 		{D113B573-3132-4B4F-A159-28B8DAEABE83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D113B573-3132-4B4F-A159-28B8DAEABE83}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D113B573-3132-4B4F-A159-28B8DAEABE83}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{302400E9-EA17-43BD-B662-642D270830C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{302400E9-EA17-43BD-B662-642D270830C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{302400E9-EA17-43BD-B662-642D270830C6}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{302400E9-EA17-43BD-B662-642D270830C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{302400E9-EA17-43BD-B662-642D270830C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{302400E9-EA17-43BD-B662-642D270830C6}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{87CF2085-8BC5-4574-9787-4A940FE47685}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87CF2085-8BC5-4574-9787-4A940FE47685}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87CF2085-8BC5-4574-9787-4A940FE47685}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{87CF2085-8BC5-4574-9787-4A940FE47685}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87CF2085-8BC5-4574-9787-4A940FE47685}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87CF2085-8BC5-4574-9787-4A940FE47685}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{C79ABFFB-1029-4AA6-B398-78AC5A70E350}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C79ABFFB-1029-4AA6-B398-78AC5A70E350}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C79ABFFB-1029-4AA6-B398-78AC5A70E350}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{C79ABFFB-1029-4AA6-B398-78AC5A70E350}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C79ABFFB-1029-4AA6-B398-78AC5A70E350}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C79ABFFB-1029-4AA6-B398-78AC5A70E350}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -157,6 +181,9 @@ Global
 		{251E09BC-527F-42A1-ABEE-906D86DB7C20} = {03BA4AA1-C62D-4574-A7A0-916792724AD5}
 		{61831DAE-B290-4DC6-88DA-47CD7734BE27} = {03BA4AA1-C62D-4574-A7A0-916792724AD5}
 		{D113B573-3132-4B4F-A159-28B8DAEABE83} = {03BA4AA1-C62D-4574-A7A0-916792724AD5}
+		{302400E9-EA17-43BD-B662-642D270830C6} = {03BA4AA1-C62D-4574-A7A0-916792724AD5}
+		{87CF2085-8BC5-4574-9787-4A940FE47685} = {03BA4AA1-C62D-4574-A7A0-916792724AD5}
+		{C79ABFFB-1029-4AA6-B398-78AC5A70E350} = {03BA4AA1-C62D-4574-A7A0-916792724AD5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BAD2B1D2-1A1F-4379-9FD2-8677B7F56357}
