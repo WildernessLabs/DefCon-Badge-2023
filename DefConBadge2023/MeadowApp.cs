@@ -23,6 +23,42 @@ namespace DefConBadge2023
 
         MicroGraphics graphics;
 
+        const float defaultBrightness = 0.2f;
+        const float brightnessChangeAmount = 0.1f;
+        const double lowestAmbientBrightnessThreshold = 40;
+        const double highestAmbientBrightnessThreshold = 1500;
+        int _BrightnessUserPreferenceAdjustment = 0;
+        public int BrightnessUserPreferenceAdjustment {
+            get
+            {
+                return _BrightnessUserPreferenceAdjustment;
+            }
+            set
+            {
+                _BrightnessUserPreferenceAdjustment = Math.Clamp(value, -5, 5);
+            }
+        }
+        const float brightnessAdjustmentPerPreferenceAdjustementLevel = 0.1f;
+        float AdjustDisplayBrightnessToAmbientBrightness(int brightnessAdjustmentLevel)
+        {
+            float lightAdjustedBrightness = defaultBrightness;
+            if (projLab.LightSensor.Illuminance is { } light)
+            {
+                if (light is { } lightReading)
+                {
+                    double clamped = (float)Math.Clamp(lightReading.Lux, lowestAmbientBrightnessThreshold, highestAmbientBrightnessThreshold).Map(lowestAmbientBrightnessThreshold, highestAmbientBrightnessThreshold, 0.1, 1.0);
+                    lightAdjustedBrightness = (float)Math.Clamp(clamped + (brightnessAdjustmentLevel * brightnessAdjustmentPerPreferenceAdjustementLevel), 0.1, 1.0);
+                    Resolver.Log.Info($"Lux: {lightReading.Lux}, Adjusted: {lightAdjustedBrightness}");
+                }
+            }
+            return lightAdjustedBrightness;
+        }
+        float _mikroBusDisplayBrightness = defaultBrightness;
+        float mikroBusDisplayBrightness
+        {
+            get { return _mikroBusDisplayBrightness; }
+            set { _mikroBusDisplayBrightness = Math.Clamp(value, 0.0f, 1.0f); }
+        }
         IGraphicsDisplay mikroBusLedDisplay;
         MicroGraphics mikroBusLedDisplayGraphics;
 
@@ -32,58 +68,38 @@ namespace DefConBadge2023
 
         BufferRgb888 defcon1;
         BufferRgb888 defcon2;
-        BufferRgb888 defcon3;
-        BufferRgb888 defcon4;
+        //BufferRgb888 defcon3;
+        //BufferRgb888 defcon4;
 
         //Random rand = new Random();
 
-        const float defaultBrightness = 0.2f;
-        const float brightnessChangeAmount = 0.1f;
-        const double lowestAmbientBrightnessThreshold = 40;
-        const double highestAmbientBrightnessThreshold = 1500;
-        float _tertiaryDisplayBrightness = defaultBrightness;
-        float tertiaryDisplayBrightness {
-            get { return _tertiaryDisplayBrightness; }
-            set { _tertiaryDisplayBrightness = Math.Clamp(value, 0.0f, 1.0f); }
-        }
-        float AdjustDisplayBrightnessToAmbientBrightness()
-        {
-            float adjustedBrightness = defaultBrightness;
-            if (projLab.LightSensor.Illuminance is { } light)
-            {
-                if (light is { } lightReading)
-                {
-                    adjustedBrightness = (float)Math.Clamp(lightReading.Lux, lowestAmbientBrightnessThreshold, highestAmbientBrightnessThreshold).Map(lowestAmbientBrightnessThreshold, highestAmbientBrightnessThreshold, 0.1, 1.0);
-                    //Resolver.Log.Info($"Lux: {lightReading.Lux}, Adjusted: {adjustedBrightness}");
-                }
-            }
-            return adjustedBrightness;
-        }
-
         public override async Task Run()
         {
-            ScrollBannerMessage(mikroBusLedDisplayGraphics);
+            //ScrollBannerMessage(mikroBusLedDisplayGraphics);
+
             while (true)
             {
                 DrawSplash(defcon1);
+                await Task.Delay(4000).ConfigureAwait(false);
+
+                currentPage = pages[0];
+                currentPage.StartUpdating(projLab, graphics);
                 await Task.Delay(10000).ConfigureAwait(false);
-
-                currentPage.StartUpdating(projLab, graphics);
-                await Task.Delay(20000).ConfigureAwait(false);
                 currentPage.StopUpdating();
 
-                DrawSplash(defcon2);
-                await Task.Delay(3000).ConfigureAwait(false);
+                //DrawSplash(defcon2);
+                //await Task.Delay(2500).ConfigureAwait(false);
 
-                currentPage.StartUpdating(projLab, graphics);
-                await Task.Delay(20000).ConfigureAwait(false);
-                currentPage.StopUpdating();
+                //currentPage = pages[1];
+                //currentPage.StartUpdating(projLab, graphics);
+                //await Task.Delay(20000).ConfigureAwait(false);
+                //currentPage.StopUpdating();
 
-                DrawSplash(defcon3);
-                await Task.Delay(3000).ConfigureAwait(false);
+                //DrawSplash(defcon3);
+                //await Task.Delay(2500).ConfigureAwait(false);
 
-                DrawSplash(defcon4);
-                await Task.Delay(3000).ConfigureAwait(false);
+                //DrawSplash(defcon4);
+                //await Task.Delay(2500).ConfigureAwait(false);
             }
         }
 
@@ -103,36 +119,41 @@ namespace DefConBadge2023
                     {
                         if (stopwatch.ElapsedMilliseconds > 500)
                         {
-                            //Resolver.Log.Info("Adjusting brightness");
-                            tertiaryDisplayBrightness = AdjustDisplayBrightnessToAmbientBrightness();
+                            //Resolver.Log.Trace("Adjusting brightness");
+                            mikroBusDisplayBrightness = AdjustDisplayBrightnessToAmbientBrightness(BrightnessUserPreferenceAdjustment);
                             stopwatch.Restart();
                         }
                         graphics.Clear();
-                        graphics.DrawText(0 - x, 1, message, new Color(tertiaryDisplayBrightness, tertiaryDisplayBrightness, tertiaryDisplayBrightness));
+                        graphics.DrawText(0 - x, 1, message, new Color(mikroBusDisplayBrightness, mikroBusDisplayBrightness, mikroBusDisplayBrightness));
                         graphics.Show();
 
                         Thread.Sleep(0);
                     }
 
-                    Thread.Sleep(50);
+                    Thread.Sleep(0);
                 }
             }).ConfigureAwait(false);
         }
 
         public override Task Initialize()
         {
+            //foreach (var x in Assembly.GetExecutingAssembly().GetManifestResourceNames())
+            //{
+            //    Resolver.Log.Info($"{x}");
+            //}
+
             Resolver.Log.Info("Initialize hardware...");
 
             projLab = ProjectLab.Create();
             graphics = new MicroGraphics(projLab.Display);
 
-            mikroBusLedDisplay = new C16x9(projLab.MikroBus2.Pins.CS, projLab.MikroBus2.I2cBus);
-            mikroBusLedDisplayGraphics = new MicroGraphics(mikroBusLedDisplay)
-            {
-                IgnoreOutOfBoundsPixels = true,
-                CurrentFont = new Font6x8(),
-                Rotation = RotationType._180Degrees,
-            };
+            //mikroBusLedDisplay = new C16x9(projLab.MikroBus2.Pins.CS, projLab.MikroBus2.I2cBus);
+            //mikroBusLedDisplayGraphics = new MicroGraphics(mikroBusLedDisplay)
+            //{
+            //    IgnoreOutOfBoundsPixels = true,
+            //    CurrentFont = new Font6x8(),
+            //    Rotation = RotationType._180Degrees,
+            //};
 
             projLab.LeftButton.Clicked += ButtonLeft_Clicked;
             projLab.RightButton.Clicked += ButtonRight_Clicked;
@@ -144,6 +165,7 @@ namespace DefConBadge2023
 
             pages = new IBadgePage[]
             {
+                new GenesisAnimationsPage(),
                 new EnvironmentPage(),
                 //new GraphPage(),
                 //new WiFiTrackerPage(),
@@ -152,7 +174,6 @@ namespace DefConBadge2023
             {
                 page.Init(projLab);
             }
-
             currentPage = pages[0];
 
             graphics.Clear();
@@ -161,8 +182,8 @@ namespace DefConBadge2023
 
             defcon1 = LoadImage("defcon31-1.jpg");
             defcon2 = LoadImage("defcon31-2.jpg");
-            defcon3 = LoadImage("defcon31-3.jpg");
-            defcon4 = LoadImage("defcon31-4.jpg");
+            //defcon3 = LoadImage("defcon31-3.jpg");
+            //defcon4 = LoadImage("defcon31-4.jpg");
 
             return Task.CompletedTask;
         }
@@ -204,15 +225,15 @@ namespace DefConBadge2023
 
         private void ButtonRight_Clicked(object sender, EventArgs e)
         {
-            tertiaryDisplayBrightness += brightnessChangeAmount;
-            Resolver.Log.Info($"Brightness: {tertiaryDisplayBrightness}");
+            //BrightnessUserPreferenceAdjustment += 1;
+            //Resolver.Log.Info($"Brightness adjustment: {BrightnessUserPreferenceAdjustment}");
             currentPage.Right();
         }
 
         private void ButtonLeft_Clicked(object sender, EventArgs e)
         {
-            tertiaryDisplayBrightness -= brightnessChangeAmount;
-            Resolver.Log.Info($"Brightness: {tertiaryDisplayBrightness}");
+            //BrightnessUserPreferenceAdjustment -= 1;
+            //Resolver.Log.Info($"Brightness adjustment: {BrightnessUserPreferenceAdjustment}");
             currentPage.Left();
         }
 
