@@ -27,6 +27,12 @@
     <None Remove="sprites-sor2\axel-uppercut-4.jpg" />
     <None Remove="sprites-sor2\axel-uppercut-5.jpg" />
     <None Remove="sprites-sor2\axel-uppercut-6.jpg" />
+    <None Remove="sprites-tjearl\tjearl-tjwalk-0.jpg" />
+    <None Remove="sprites-tjearl\tjearl-tjwalk-1.jpg" />
+    <None Remove="sprites-tjearl\tjearl-tjwalk-2.jpg" />
+    <None Remove="sprites-tjearl\tjearl-tjwalk-3.jpg" />
+    <None Remove="sprites-tjearl\tjearl-tjwalk-4.jpg" />
+    <None Remove="sprites-tjearl\tjearl-tjwalk-5.jpg" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="defcon31-1.jpg">
@@ -75,6 +81,24 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="sprites-sor2\axel-uppercut-6.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="sprites-tjearl\tjearl-tjwalk-0.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="sprites-tjearl\tjearl-tjwalk-1.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="sprites-tjearl\tjearl-tjwalk-2.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="sprites-tjearl\tjearl-tjwalk-3.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="sprites-tjearl\tjearl-tjwalk-4.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="sprites-tjearl\tjearl-tjwalk-5.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
