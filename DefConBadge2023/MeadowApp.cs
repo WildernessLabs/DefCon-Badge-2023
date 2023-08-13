@@ -4,9 +4,9 @@ using Meadow.Devices;
 using Meadow.Foundation;
 using Meadow.Foundation.Audio;
 using Meadow.Foundation.Displays;
+using Meadow.Foundation.Displays.UI.InputTypes;
 using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Graphics.Buffers;
-using Meadow.Foundation.mikroBUS.Displays;
 using Meadow.Gateway.WiFi;
 using Meadow.Hardware;
 using SimpleJpegDecoder;
@@ -112,6 +112,11 @@ namespace DefConBadge2023
             DrawSplash(defcon1);
             await CountDown(9);
 
+            for(int i = 0; i < 100; i++)
+            {
+                DrawGraph();    
+            }
+
             DrawSplash(defcon2);
             await CountDown(9);
 
@@ -140,6 +145,37 @@ namespace DefConBadge2023
         {
             graphics.DrawBuffer(0, 0, buffer);
             graphics.Show();
+        }
+
+        int[] data;
+        int index = 0;
+
+        void DrawGraph()
+        {
+            if(data == null)
+            {
+                data = new int[graphics.Width];
+
+                for (int i = 0; i < graphics.Width; i++)
+                {
+                    data[i] = graphics.Height / 2 + (int)(graphics.Height / 3 * Math.Sin(i / (4 * Math.PI)));
+                }
+            }
+
+            graphics.Clear();
+            int dataIndex1, dataIndex2;
+
+            for (int i = 0; i < data.Length - 1; i++)
+            {
+                dataIndex1 = (index + i) % data.Length;
+                dataIndex2 = (index + i + 1) % data.Length;
+
+                graphics.DrawLine(i, data[dataIndex1], i + 1, data[dataIndex2], Color.LawnGreen);
+            }
+
+            graphics.Show();
+
+            index++;
         }
 
         async Task DrawGlitch(IPixelBuffer buffer) 
@@ -269,20 +305,10 @@ namespace DefConBadge2023
             frogit.Update();
         }
 
-        /*
-        public void SetAuxDisplay(int value)
-        {
-            graphics8x8.Clear();
-            graphics8x8.DrawText(2, 2, $"{value}");
-            graphics8x8.Show();
-        }
-        */
-
         async Task CountDown(int seconds)
         {
             for(int i = seconds; i > 0; i--)
             {
-            //    SetAuxDisplay(i);
                 await Task.Delay(TimeSpan.FromSeconds(1));
             }
         }
@@ -310,16 +336,25 @@ namespace DefConBadge2023
 
             if (networks.Count > 0)
             {
-                Console.WriteLine("|-------------------------------------------------------------|---------|");
-                Console.WriteLine("|         Network Name             | RSSI |       BSSID       | Channel |");
-                Console.WriteLine("|-------------------------------------------------------------|---------|");
+                Console.WriteLine("|-------------------------------------------------|---------|");
+                Console.WriteLine("|     Network Name     | RSSI |       BSSID       | Channel |");
+                Console.WriteLine("|-------------------------------------------------|---------|");
                 foreach (WifiNetwork accessPoint in networks)
                 {
-                    Console.WriteLine($"| {accessPoint.Ssid,-32} | {accessPoint.SignalDbStrength,4} | {accessPoint.Bssid,17} |   {accessPoint.ChannelCenterFrequency,3}   |");
+                    string ssid = string.Empty;
+                    if (!string.IsNullOrWhiteSpace(accessPoint.Ssid))
+                    {
+                        ssid = accessPoint.Ssid.Substring(0, Math.Min(accessPoint.Ssid.Length, 20));
+                    }
+
+                    ssid = ssid.PadRight(20);
+
+                    Console.WriteLine($"| {ssid} | {accessPoint.SignalDbStrength,4} | {accessPoint.Bssid,17} | {accessPoint.ChannelCenterFrequency,3} |");
 
                     y += spacing;
-                    graphics.DrawText(0, y, $"| {accessPoint.SignalDbStrength,4} | {accessPoint.Bssid,17} | {accessPoint.ChannelCenterFrequency,3} |");
+                    graphics.DrawText(0, y, $"{ssid} | {accessPoint.SignalDbStrength,4} | {accessPoint.Bssid,17} | {accessPoint.ChannelCenterFrequency,3}");
                 }
+
             }
             else
             {
