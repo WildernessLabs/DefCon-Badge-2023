@@ -44,6 +44,7 @@ namespace DefConBadge2023
             projLab = ProjectLab.Create();
             ((Ili9341)projLab.Display).SpiBusSpeed = new Meadow.Units.Frequency(48, Meadow.Units.Frequency.UnitType.Megahertz);
             graphics = new MicroGraphics(projLab.Display);
+            graphics.IgnoreOutOfBoundsPixels = true;
 
             frogit = new FrogItGame();
             frogit.Init(graphics, new MicroAudio(projLab.Speaker));
@@ -112,7 +113,7 @@ namespace DefConBadge2023
             DrawSplash(defcon1);
             await CountDown(9);
 
-            for(int i = 0; i < 100; i++)
+            for(int i = 0; i < 50; i++)
             {
                 DrawGraph();    
             }
@@ -154,9 +155,9 @@ namespace DefConBadge2023
         {
             if(data == null)
             {
-                data = new int[graphics.Width];
+                data = new int[540]; // graphics.Width];
 
-                for (int i = 0; i < graphics.Width; i++)
+                for (int i = 0; i < 540; i++)
                 {
                     data[i] = graphics.Height / 2 + (int)(graphics.Height / 3 * Math.Sin(i / (4 * Math.PI)));
                 }
@@ -175,7 +176,7 @@ namespace DefConBadge2023
 
             graphics.Show();
 
-            index++;
+            index+=3;
         }
 
         async Task DrawGlitch(IPixelBuffer buffer) 
