@@ -26,12 +26,12 @@ namespace DefConBadge2023
 
         TimeSpan animationFrameDelay = TimeSpan.FromMilliseconds(0);
         int currentAnimationFrame = 0;
-        int streetsOfRage2AxelBufferDrawLocationX;
-        int streetsOfRage2AxelBufferDrawLocationY;
-        int sonicCdSonicTapBufferDrawLocationX;
-        int sonicCdSonicTapBufferDrawLocationY;
-        int tjearlEarlWalkBufferDrawLocationX;
-        int tjearlEarlWalkBufferDrawLocationY;
+        Point initialStreetsOfRage2AxelBufferDrawLocation;
+        Point currentStreetsOfRage2AxelBufferDrawLocation;
+        Point initialSonicCdSonicTapBufferDrawLocation;
+        Point currentSonicCdSonicTapBufferDrawLocation;
+        Point initialTjearlEarlWalkBufferDrawLocation;
+        Point currentTjearlEarlWalkBufferDrawLocation;
 
         public class JpegAnimation
         {
@@ -40,11 +40,16 @@ namespace DefConBadge2023
             public string ResourcePrefix { get; private set; }
             public IPixelBuffer[] Frames { get; private set; }
             public Size FrameSize { get; private set; }
-            public JpegAnimation(int frameCount, string resourcePrefix)
+
+            public Size FrameMovement { get; private set; }
+
+            public JpegAnimation(int frameCount, string resourcePrefix) : this(frameCount, resourcePrefix, Size.Empty) { }
+            public JpegAnimation(int frameCount, string resourcePrefix, Size frameMovement)
             {
                 FrameCount = frameCount;
                 ResourcePrefix = resourcePrefix;
                 Frames = new IPixelBuffer[frameCount];
+                FrameMovement = frameMovement;
             }
 
             public void Init()
@@ -63,25 +68,72 @@ namespace DefConBadge2023
         public void StartUpdating(IProjectLabHardware config, MicroGraphics graphics)
         {
             IsUpdating = true;
+            currentSonicCdSonicTapBufferDrawLocation = initialSonicCdSonicTapBufferDrawLocation;
+            currentStreetsOfRage2AxelBufferDrawLocation = initialStreetsOfRage2AxelBufferDrawLocation;
+            currentTjearlEarlWalkBufferDrawLocation = initialTjearlEarlWalkBufferDrawLocation;
+            var windowSize = new Size(graphics.Width, graphics.Height);
+            var sonicCdSonicTapSize = sonicCdSonicTapAnimation.FrameSize;
+            var streetsOfRage2AxelSize = streetsOfRage2AxelAnimation.FrameSize;
+            var tjearlEarlWalkSize = tjearlEarlWalkAnimation.FrameSize;
 
-            while (IsUpdating)
+            _ = Task.Run(() =>
             {
-                graphics.Clear();
+                while (IsUpdating)
+                {
+                    graphics.Clear();
 
-                graphics.DrawBuffer(streetsOfRage2AxelBufferDrawLocationX, streetsOfRage2AxelBufferDrawLocationY, streetsOfRage2AxelAnimation.Frames[currentAnimationFrame % streetsOfRage2AxelAnimation.FrameCount]);
-                graphics.DrawBuffer(sonicCdSonicTapBufferDrawLocationX, sonicCdSonicTapBufferDrawLocationY, sonicCdSonicTapAnimation.Frames[currentAnimationFrame % sonicCdSonicTapAnimation.FrameCount]);
-                graphics.DrawBuffer(tjearlEarlWalkBufferDrawLocationX, tjearlEarlWalkBufferDrawLocationY, tjearlEarlWalkAnimation.Frames[currentAnimationFrame % tjearlEarlWalkAnimation.FrameCount]);
+                    graphics.DrawBuffer(currentStreetsOfRage2AxelBufferDrawLocation.X, currentStreetsOfRage2AxelBufferDrawLocation.Y, streetsOfRage2AxelAnimation.Frames[currentAnimationFrame % streetsOfRage2AxelAnimation.FrameCount]);
+                    currentStreetsOfRage2AxelBufferDrawLocation.X += streetsOfRage2AxelAnimation.FrameMovement.Width;
+                    currentStreetsOfRage2AxelBufferDrawLocation.Y += streetsOfRage2AxelAnimation.FrameMovement.Height;
+                    if (!IsSpriteInBounds(ref windowSize, ref currentStreetsOfRage2AxelBufferDrawLocation, ref streetsOfRage2AxelSize))
+                    {
+                        currentStreetsOfRage2AxelBufferDrawLocation = initialStreetsOfRage2AxelBufferDrawLocation;
+                    }
+                    graphics.DrawBuffer(currentSonicCdSonicTapBufferDrawLocation.X, currentSonicCdSonicTapBufferDrawLocation.Y, sonicCdSonicTapAnimation.Frames[currentAnimationFrame % sonicCdSonicTapAnimation.FrameCount]);
+                    currentSonicCdSonicTapBufferDrawLocation.X += sonicCdSonicTapAnimation.FrameMovement.Width;
+                    currentSonicCdSonicTapBufferDrawLocation.Y += sonicCdSonicTapAnimation.FrameMovement.Height;
+                    graphics.DrawBuffer(currentTjearlEarlWalkBufferDrawLocation.X, currentTjearlEarlWalkBufferDrawLocation.Y, tjearlEarlWalkAnimation.Frames[currentAnimationFrame % tjearlEarlWalkAnimation.FrameCount]);
+                    currentTjearlEarlWalkBufferDrawLocation.X += tjearlEarlWalkAnimation.FrameMovement.Width;
+                    currentTjearlEarlWalkBufferDrawLocation.Y += tjearlEarlWalkAnimation.FrameMovement.Height;
+                    if (!IsSpriteInBounds(ref windowSize, ref currentTjearlEarlWalkBufferDrawLocation, ref tjearlEarlWalkSize))
+                    {
+                        currentTjearlEarlWalkBufferDrawLocation = initialTjearlEarlWalkBufferDrawLocation;
+                    }
 
-                graphics.Show();
-                currentAnimationFrame += 1;
-                Thread.Sleep(animationFrameDelay);
-            }
+                    graphics.Show();
+                    currentAnimationFrame += 1;
+                    Thread.Sleep(animationFrameDelay);
+                }
+            });
+        }
+
+        /// <summary>
+        /// Determine if any corners of a rectangular sprite are within the provided window.
+        /// </summary>
+        bool IsSpriteInBounds(ref Size window, ref Point spriteLocation, ref Size spriteSize)
+        {
+            Point[] spriteCorners = new Point[4];
+            spriteCorners[0] = spriteLocation;
+            spriteCorners[1] = new Point(spriteLocation.X + spriteSize.Width, spriteLocation.Y);
+            spriteCorners[2] = new Point(spriteLocation.X + spriteSize.Width, spriteLocation.Y + spriteSize.Height);
+            spriteCorners[3] = new Point(spriteLocation.X, spriteLocation.Y + spriteSize.Height);
+            return IsCoordinateInBounds(ref window, ref spriteCorners[0])
+                || IsCoordinateInBounds(ref window, ref spriteCorners[1])
+                || IsCoordinateInBounds(ref window, ref spriteCorners[2])
+                || IsCoordinateInBounds(ref window, ref spriteCorners[3]);
+        }
+        bool IsCoordinateInBounds(ref Size window, ref Point location)
+        {
+            if (location.X < 0 || location.Y < 0) { return false; }
+
+            if (location.X > window.Width || location.Y > window.Height) { return false; }
+
+            return true;
         }
 
         public void StopUpdating()
         {
             IsUpdating = false;
-            Resolver.Log.Info($"Counted {currentAnimationFrame} frames");
             currentAnimationFrame = 0;
         }
 
@@ -89,21 +141,18 @@ namespace DefConBadge2023
         {
             // HACK: Probably some clean-up needed elsewhere, but GC.Collect prevents memory issues.
             GC.Collect();
-            streetsOfRage2AxelAnimation = new JpegAnimation(7, "DefConBadge2023.sprites_sor2.axel-uppercut-");
+            streetsOfRage2AxelAnimation = new JpegAnimation(7, "DefConBadge2023.sprites_sor2.axel-uppercut-", new Size(-3, 0));
             streetsOfRage2AxelAnimation.Init();
             sonicCdSonicTapAnimation = new JpegAnimation(4, "DefConBadge2023.sprites_soniccd.sonic-tap-");
             sonicCdSonicTapAnimation.Init();
-            tjearlEarlWalkAnimation = new JpegAnimation(6, "DefConBadge2023.sprites_tjearl.tjearl-tjwalk-");
+            tjearlEarlWalkAnimation = new JpegAnimation(6, "DefConBadge2023.sprites_tjearl.tjearl-tjwalk-", new Size(-5, 5));
             tjearlEarlWalkAnimation.Init();
             GC.Collect();
 
             //PLv3 screen: 320x240
-            streetsOfRage2AxelBufferDrawLocationX = 25;
-            streetsOfRage2AxelBufferDrawLocationY = 15;
-            sonicCdSonicTapBufferDrawLocationX = (hardware.Display.Width - sonicCdSonicTapAnimation.FrameSize.Width - 25);
-            sonicCdSonicTapBufferDrawLocationY = (hardware.Display.Height - sonicCdSonicTapAnimation.FrameSize.Height - 15);
-            tjearlEarlWalkBufferDrawLocationX = (hardware.Display.Width - tjearlEarlWalkAnimation.FrameSize.Width - 25);
-            tjearlEarlWalkBufferDrawLocationY = 15;
+            initialStreetsOfRage2AxelBufferDrawLocation = new Point(100, 15);
+            initialSonicCdSonicTapBufferDrawLocation = new Point(hardware.Display.Width - sonicCdSonicTapAnimation.FrameSize.Width - 25, hardware.Display.Height - sonicCdSonicTapAnimation.FrameSize.Height - 15);
+            initialTjearlEarlWalkBufferDrawLocation = new Point(hardware.Display.Width - tjearlEarlWalkAnimation.FrameSize.Width, 0 - tjearlEarlWalkAnimation.FrameSize.Height);
         }
 
         public void Reset()
