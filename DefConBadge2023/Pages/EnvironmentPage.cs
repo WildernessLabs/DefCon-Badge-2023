@@ -1,9 +1,11 @@
-﻿using Meadow.Devices;
+﻿using Meadow;
+using Meadow.Devices;
 using Meadow.Foundation;
 using Meadow.Foundation.Graphics;
-using Meadow.Foundation.Sensors.Accelerometers;
-using Meadow.Foundation.Sensors.Atmospheric;
-using Meadow.Foundation.Sensors.Light;
+using Meadow.Peripherals.Sensors;
+using Meadow.Peripherals.Sensors.Atmospheric;
+using Meadow.Peripherals.Sensors.Light;
+using Meadow.Peripherals.Sensors.Motion;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,9 +17,11 @@ namespace DefConBadge2023
         IProjectLabHardware config;
 
         MicroGraphics graphics;
-        Bme688 EnvironmentSensor { get; private set; }
-        Bh1750 LightSensor { get; private set; }
-        Bmi270 MotionSensor { get; private set; }
+      //  Bme688 EnvironmentSensor { get; private set; }
+        IBarometricPressureSensor PressureSensor { get; set; }
+
+        ILightSensor LightSensor { get; set; }
+        IAccelerometer MotionSensor { get; set; }
 
         public bool IsUpdating = false;
 
@@ -28,7 +32,7 @@ namespace DefConBadge2023
 
             IsUpdating = true;
 
-            EnvironmentSensor.StartUpdating();
+            PressureSensor.StartUpdating();
             LightSensor.StartUpdating();
             MotionSensor.StartUpdating();
 
@@ -44,18 +48,18 @@ namespace DefConBadge2023
 
         public void StopUpdating()
         {
-            EnvironmentSensor.StartUpdating();
-            LightSensor.StartUpdating();
-            MotionSensor.StartUpdating();
+            PressureSensor.StopUpdating();
+            LightSensor.StopUpdating();
+            MotionSensor.StopUpdating();
 
             IsUpdating = false;
         }
 
         public void Init(IProjectLabHardware hardware)
         {
-            EnvironmentSensor = hardware.EnvironmentalSensor;
+         //   EnvironmentSensor = hardware.EnvironmentalSensor;
             LightSensor = hardware.LightSensor;
-            MotionSensor = hardware.MotionSensor;
+            MotionSensor = hardware.Accelerometer;
         }
 
         public void Reset()
@@ -92,17 +96,17 @@ namespace DefConBadge2023
         {
             graphics.Clear();
           
-            if (config.EnvironmentalSensor.Temperature is { } temp)
+            if (config.TemperatureSensor.Temperature is { } temp)
             {
                 DrawStatus("Temperature:", $"{temp.Celsius:N1}C", WildernessLabsColors.GalleryWhite, 0);
             }
 
-            if (config.EnvironmentalSensor.Pressure is { } pressure)
+            if (config.BarometricPressureSensor.Pressure is { } pressure)
             {
                 DrawStatus("Pressure:", $"{pressure.StandardAtmosphere:N2}atm", WildernessLabsColors.GalleryWhite, 60);
             }
 
-            if (config.EnvironmentalSensor.Humidity is { } humidity)
+            if (config.HumiditySensor.Humidity is { } humidity)
             {
                 DrawStatus("Humidity:", $"{humidity.Percent:N1}%", WildernessLabsColors.GalleryWhite, 120);
             }
